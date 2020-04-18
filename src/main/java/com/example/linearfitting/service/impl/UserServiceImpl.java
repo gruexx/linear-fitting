@@ -27,6 +27,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean register(UserDTO user) {
+        if (isExist(user.getName())) {
+            return false;
+        }
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
         return userMapper.insert(user) > 0;
@@ -54,6 +57,14 @@ public class UserServiceImpl implements UserService {
         data.setData(data.getResult().toString());
         data.setResult(null);
         return dataMapper.insert(data);
+    }
+
+    @Override
+    public Boolean isExist(String name) {
+        if (userMapper.isExist(name) > 0) {
+            return true;
+        }
+        return false;
     }
 
     private List<List<Double>> transFor(String string) {

@@ -60,6 +60,11 @@
         </if>
 
     </select>
+    <select id="isExist" resultType="java.lang.Integer">
+        select count(1)
+        from `user`
+        where  `name` = #{name}
+    </select>
 
 
 </mapper>

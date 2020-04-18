@@ -26,4 +26,6 @@ public interface UserService {
     Object data(Integer id);
 
     Object save(DataVO data);
+
+    Boolean isExist(String name);
 }

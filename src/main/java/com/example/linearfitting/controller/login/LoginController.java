@@ -24,6 +24,12 @@ public class LoginController {
     @Resource
     private UserService userService;
 
+    @ApiOperation("是否存在")
+    @GetMapping("/isExist")
+    public Result<?> isExist(String name){
+        return Result.success(userService.isExist(name));
+    }
+
     @ApiOperation("注册")
     @PostMapping("/register")
     public Result<?> register(@RequestBody UserDTO user) {
