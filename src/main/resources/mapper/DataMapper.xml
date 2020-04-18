@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.linearfitting.mapper.DataMapper">
+    <resultMap id="BaseResultMap" type="com.example.linearfitting.entity.user.DataVO">
+        <id column="id" property="id"/>
+        <result column="data" property="data"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+    <insert id="insert">
+        insert into `data`(`data`,user_id) value(#{data.data},#{data.userId})
+    </insert>
+
+    <select id="getData" resultType="com.example.linearfitting.entity.user.DataVO">
+        select  *
+        from   `data`
+        where user_id = #{id}
+    </select>
+</mapper>
