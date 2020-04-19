@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="dist/css/signin.css">
 </head>
 
-<body style="padding-bottom: 0%;">
+<body style="padding-bottom: 0;">
 <div class="container">
     <div class="row">
         <div class="col-sm-8 blog-main">
@@ -70,23 +70,42 @@
         </div>
 
         <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-            <div class="sidebar-module sidebar-module-inset">
+            <div class="sidebar-module sidebar-module-inset" id="login_box">
                 <div class="form-signin">
-                    <h1 class="h3 mb-3 font-weight-normal">用户登录/注册</h1>
-                    <label for="inputUsername" class="sr-only">Username
-                        address</label>
-                    <input type="text" id="inputUsername" class="form-control" placeholder="用户名" required
-                           autofocus>
-                    <label for="inputPassword" class="sr-only">Password</label>
-                    <input type="password" id="inputPassword" class="form-control" placeholder="密码" required>
-                    <small style="display: none" id="msg1" class="form-text text-danger">用户名密码不正确</small>
-                    <small style="display: none" id="msg4" class="form-text text-danger">用户名不能为空</small>
-                    <small style="display: none" id="msg6" class="form-text text-danger">密码不能为空</small>
-                    <small style="display: none" id="msg5" class="form-text text-danger">用户名已存在</small>
-                    <small style="display: none" id="msg2" class="form-text text-success">注册成功</small>
-                    <small style="display: none" id="msg3" class="form-text text-info">已有相同用户名注册</small>
-                    <button class="btn btn-sm btn-primary btn-block" id="login_btn">登录</button>
-                    <button class="btn btn-sm btn-info btn-block" id="register_btn">注册</button>
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#" id="login_tab"><h1 class="h3 mb-3 font-weight-normal"
+                                                                                     aria-disabled="true">登录</h1></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" tabindex="-1" aria-disabled="true" id="reg_tab"><h1
+                                    class="h3 mb-3 font-weight-normal">注册</h1></a>
+                        </li>
+                    </ul>
+                    <block id="login_form" style="display: block">
+                        <label for="loginUsername" class="sr-only">Username
+                            address</label>
+                        <input type="text" id="loginUsername" class="form-control" placeholder="用户名" required
+                               autofocus>
+                        <label for="loginPassword" class="sr-only">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="密码" required>
+                        <small style="display: none" id="msg1" class="form-text text-danger">用户名密码不正确</small>
+                        <button class="btn btn-sm btn-primary btn-block" id="login_btn">登录</button>
+                    </block>
+                    <block id="reg_form" style="display: none">
+                        <label for="regUsername" class="sr-only">Username
+                            address</label>
+                        <input type="text" id="regUsername" class="form-control" placeholder="用户名" required
+                               autofocus>
+                        <label for="regPassword" class="sr-only">Password</label>
+                        <input type="password" id="regPassword" class="form-control" placeholder="密码" required>
+                        <small style="display: none" id="msg4" class="form-text text-danger">用户名不能为空</small>
+                        <small style="display: none" id="msg6" class="form-text text-danger">密码不能为空</small>
+                        <small style="display: none" id="msg5" class="form-text text-danger">用户名已存在</small>
+                        <small style="display: none" id="msg2" class="form-text text-success">注册成功</small>
+                        <small style="display: none" id="msg3" class="form-text text-info">已有相同用户名注册</small>
+                        <button class="btn btn-sm btn-info btn-block" id="register_btn">注册</button>
+                    </block>
                 </div>
             </div>
         </div>
@@ -121,10 +140,9 @@
     }
 
 
-    $("#inputUsername").blur(function () {
-        let username = $("#inputUsername").val()
-        let password = $("#inputPassword").val()
-        if (username == "") {
+    $("#regUsername").blur(function () {
+        let username = $("#regUsername").val()
+        if (username === "") {
             removeSmallTxt();
             $('#msg4').attr("style", "display:block");
         } else {
@@ -147,10 +165,9 @@
         }
     });
 
-    $("#inputPassword").blur(function () {
-        let username = $("#inputUsername").val()
-        let password = $("#inputPassword").val()
-        if (password == "") {
+    $("#regPassword").blur(function () {
+        let password = $("#regPassword").val()
+        if (password === "") {
             removeSmallTxt();
             $('#msg6').attr("style", "display:block");
         } else {
@@ -158,9 +175,13 @@
         }
     });
 
+    function login_init() {
+        $('#login_box').attr("style", "display:none");
+    }
+
     $("#login_btn").click(function () {
-        let username = $("#inputUsername").val()
-        let password = $("#inputPassword").val()
+        let username = $("#loginUsername").val()
+        let password = $("#loginPassword").val()
         console.log(username)
         console.log(password)
         $.ajax({
@@ -178,13 +199,14 @@
                     removeSmallTxt();
                     $('#msg1').attr("style", "display:block");
                 }
+                login_init();
             }
         });
     });
 
     $("#register_btn").click(function () {
-        let username = $("#inputUsername").val()
-        let password = $("#inputPassword").val()
+        let username = $("#regUsername").val()
+        let password = $("#regPassword").val()
         console.log(username)
         console.log(password)
         $.ajax({
@@ -207,6 +229,20 @@
                 }
             }
         });
+    });
+
+    $("#login_tab").click(function () {
+        $('#login_tab').attr("class", "nav-link disabled");
+        $('#reg_tab').attr("class", "nav-link active");
+        $('#login_form').attr("style", "display:block");
+        $('#reg_form').attr("style", "display:none");
+    });
+
+    $("#reg_tab").click(function () {
+        $('#login_tab').attr("class", "nav-link active");
+        $('#reg_tab').attr("class", "nav-link disabled");
+        $('#login_form').attr("style", "display:none");
+        $('#reg_form').attr("style", "display:block");
     });
 
     let myChart = echarts.init(document.getElementById('main'));
@@ -303,7 +339,7 @@
     function getCookie(name) {
         let arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
 
-        if (arr == document.cookie.match(reg))
+        if (arr === document.cookie.match(reg))
 
             return unescape(arr[2]);
         else
