@@ -101,21 +101,31 @@
                 </div>
             </div>
             <div class="blog-post" style="display: none" id="userinfo">
-                <p class="blog-post-meta">当前用户 <a href="#">Jacob</a></p>
-                <button type="button" class="btn btn-primary btn-lg btn-block">Block level button</button>
-                <button type="button" class="btn btn-secondary btn-lg btn-block">Block level button</button>
-                <p>Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus.
-                    Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere
-                    consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
-                <blockquote>
-                    <p>Curabitur blandit tempus porttitor. <strong>Nullam quis risus eget urna mollis</strong> ornare
-                        vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                </blockquote>
-                <p>Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet
-                    fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
-                <p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo
-                    luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac
-                    consectetur ac, vestibulum at eros.</p>
+                <h1 class="h3 mb-3 font-weight-normal">账户信息</h1></a>
+                <p class="blog-post-meta">当前用户 <a href="#" id="display-username">Jacob</a></p>
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-block">保存当前数据</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-block">获取历史数据</button>
+                <div class="table-responsive mt-3">
+                    <table class="table table-sm">
+                        <caption>List of History</caption>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">历史数据</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><a href="#">20200423</a></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#">1221</a></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#">12321</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -135,6 +145,11 @@
 <script src='./dist/js/ecStat.js'></script>
 <script>
     function init() {
+        let userinfo = getCookie('userinfo')
+        console.log(userinfo)
+        if (userinfo) {
+            login_init(JSON.parse(userinfo))
+        }
     }
 
     init();
@@ -184,8 +199,12 @@
         }
     });
 
-    function login_init() {
+    function login_init(userinfo) {
+        setCookie('userinfo', JSON.stringify(userinfo), 60)
         $('#login_box').attr("style", "display:none");
+        $('#userinfo').attr("style", "display:block");
+        $('#display-username').html(userinfo.name)
+        console.log($('#display-username').html())
     }
 
     $("#login_btn").click(function () {
@@ -207,8 +226,9 @@
                 if (!res.data) {
                     removeSmallTxt();
                     $('#msg1').attr("style", "display:block");
+                } else {
+                    login_init(res.data);
                 }
-                login_init();
             }
         });
     });
@@ -337,31 +357,41 @@
     }
 
     //写cookies
-    function setCookie(name, password) {
-        let Days = 30;
-        let exp = new Date();
-        exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
-        document.cookie = name + "=" + escape(password) + ";expires=" + exp.toGMTString();
+    function setCookie(cname, cvalue, exminites) {
+        let d = new Date();
+        d.setTime(d.getTime() + (exminites * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
 
     //读取cookies
-    function getCookie(name) {
-        let arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-
-        if (arr === document.cookie.match(reg))
-
-            return unescape(arr[2]);
-        else
-            return null;
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 
-    //删除cookies
-    function delCookie(name) {
-        let exp = new Date();
-        exp.setTime(exp.getTime() - 1);
-        let cval = getCookie(name);
-        if (cval != null)
-            document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+    //检查cookies
+    function checkCookie() {
+        var user = getCookie("username");
+        if (user != "") {
+            alert("Welcome again " + user);
+        } else {
+            user = prompt("Please enter your name:", "");
+            if (user != "" && user != null) {
+                setCookie("username", user, 365);
+            }
+        }
     }
 </script>
 
