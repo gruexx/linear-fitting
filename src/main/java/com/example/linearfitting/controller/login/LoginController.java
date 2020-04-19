@@ -1,5 +1,6 @@
 package com.example.linearfitting.controller.login;
 
+import com.example.linearfitting.entity.base.Auth;
 import com.example.linearfitting.entity.base.Result;
 import com.example.linearfitting.entity.user.DataVO;
 import com.example.linearfitting.entity.user.UserDTO;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
@@ -26,7 +29,7 @@ public class LoginController {
 
     @ApiOperation("是否存在")
     @GetMapping("/isExist")
-    public Result<?> isExist(String name){
+    public Result<?> isExist(String name) {
         return Result.success(userService.isExist(name));
     }
 
@@ -50,7 +53,7 @@ public class LoginController {
 
     @ApiOperation("登录")
     @GetMapping("/login")
-    public Result<?> login(UserDTO user) {
+    public Result<?> login(UserDTO user, HttpServletResponse response, HttpServletRequest request) {
         if (Objects.isNull(user)) {
             return Result.error("用户信息输入错误");
         }
@@ -59,17 +62,19 @@ public class LoginController {
             return Result.error("请输入密码");
         }
 
-        return Result.success(userService.login(user));
+        return Result.success(userService.login(user, response, request));
     }
 
     @ApiOperation("获取保存数据")
     @GetMapping("/data")
+    @Auth
     public Result<?> data(Integer id) {
         return Result.success(userService.data(id));
     }
 
     @ApiOperation("获取保存数据")
     @PostMapping("/save")
+    @Auth
     public Result<?> save(@RequestBody DataVO data) {
         return Result.success(userService.save(data));
     }

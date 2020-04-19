@@ -9,9 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author
@@ -36,11 +40,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean login(UserDTO user) {
+    public Boolean login(UserDTO user, HttpServletResponse response, HttpServletRequest request) {
+        if (getTokenFromKey(request.getCookies(), "token") != null) {
+            return false;
+        }
+
         if (user.getPassword().equals(userMapper.findPassword(user))) {
+            Cookie cookie = new Cookie("token", UUID.randomUUID().toString());
+            cookie.setComment("token");
+            cookie.setPath("/demo");
+            cookie.setMaxAge(30 * 60);
+            response.addCookie(cookie);
             return true;
         }
         return false;
+    }
+
+    private String getTokenFromKey(Cookie[] cookies, String key) {
+        if (cookies == null || cookies.length == 0) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(key)) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
     @Override
