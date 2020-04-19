@@ -31,34 +31,14 @@
             </div>
             <div style="height: 50vh;width: 100%;" id="main"></div>
             <h2>数据</h2>
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                    <tr>
-                        <th>X</th>
-                        <th>Y</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>nibh</td>
-                        <td>elementum</td>
-                    </tr>
-                    <tr>
-                        <td>sagittis</td>
-                        <td>ipsum</td>
-                    </tr>
-                    <tr>
-                        <td>Fusce</td>
-                        <td>nec</td>
-                    </tr>
-                    <tr>
-                        <td>augue</td>
-                        <td>semper</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <form>
+                <div class="form-group">
+                    <label for="data-area" id="data-fx"></label>
+                    <textarea class="form-control" id="data-area" rows="3"></textarea>
+                </div>
+                <button type="button" class="btn btn-outline-dark" id="linear">数据分析</button>
+                <button type="button" class="btn btn-outline-dark" id="linear-back">数据分析(后端)</button>
+            </form>
         </div>
 
         <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
@@ -107,8 +87,8 @@
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-block">获取历史数据</button>
                 <div class="table-responsive mt-3">
                     <table class="table table-sm">
-                        <caption>List of History</caption>
-                        <thead class="thead-light">
+                        <caption style="display: none">List of History</caption>
+                        <thead class="thead-dark">
                         <tr>
                             <th scope="col">历史数据</th>
                         </tr>
@@ -274,87 +254,133 @@
         $('#reg_form').attr("style", "display:block");
     });
 
-    let myChart = echarts.init(document.getElementById('main'));
-
     let data = [
         [1, 2],
         [3, 5],
         [4, 6],
         [4.5, 4]
     ];
-    let myRegression = ecStat.regression('linear', data);
-    console.log(myRegression.expression)
 
-    myChart.setOption({
-        toolbox: {
-            feature: {
-                saveAsImage: {},
-                dataView: {}
-            }
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'cross'
-            }
-        },
-        xAxis: {
-            type: 'value',
-            splitLine: {
-                lineStyle: {
-                    type: 'dashed'
+    function chart_init(data) {
+        console.log(data)
+        let myChart = echarts.init(document.getElementById('main'));
+
+        let myRegression = ecStat.regression('linear', data);
+        console.log(myRegression)
+        let newExp = 'F(x)= ' + myRegression.parameter.gradient + 'x' + ' + ' + myRegression.parameter.intercept
+        $('#data-fx').text('结果：' + newExp);
+        $('#data-area').val(JSON.stringify(data));
+
+
+        myChart.setOption({
+            title: {
+                subtext: newExp,
+                left: 'center'
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {},
+                    dataView: {}
                 }
             },
-        },
-        yAxis: {
-            type: 'value',
-            min: 1.5,
-            splitLine: {
-                lineStyle: {
-                    type: 'dashed'
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
                 }
             },
-        },
-        series: [{
-            name: 'scatter',
-            type: 'scatter',
-            label: {
-                emphasis: {
-                    show: true
-                }
-            },
-            data: data
-        }, {
-            name: 'line',
-            type: 'line',
-            showSymbol: false,
-            data: myRegression.points,
-            markPoint: {
-                itemStyle: {
-                    normal: {
-                        color: 'transparent'
+            xAxis: {
+                name: 'x',
+                type: 'value',
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
                     }
                 },
+            },
+            yAxis: {
+                name: 'F(x)',
+                type: 'value',
+                min: 1.5,
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                },
+            },
+            series: [{
+                name: 'scatter',
+                type: 'scatter',
                 label: {
-                    normal: {
-                        show: true,
-                        position: 'left',
-                        formatter: myRegression.expression,
-                        textStyle: {
-                            color: '#333',
-                            fontSize: 14
-                        }
+                    emphasis: {
+                        show: true
                     }
                 },
-                data: [{
-                    coord: myRegression.points[myRegression.points.length - 1]
-                }]
-            }
-        }]
-    });
-    window.onresize = function () {
-        myChart.resize();
+                data: data
+            }, {
+                name: 'line',
+                type: 'line',
+                showSymbol: true,
+                data: myRegression.points,
+                markPoint: {
+                    itemStyle: {
+                        normal: {
+                            color: 'transparent'
+                        }
+                    },
+                    // label: {
+                    //     normal: {
+                    //         show: true,
+                    //         position: 'left',
+                    //         formatter: myRegression.expression,
+                    //         textStyle: {
+                    //             color: '#333',
+                    //             fontSize: 14
+                    //         }
+                    //     }
+                    // },
+                    data: [{
+                        coord: myRegression.points[myRegression.points.length - 1]
+                    }]
+                }
+            }]
+        });
+        window.onresize = function () {
+            myChart.resize();
+        }
     }
+
+    chart_init(data)
+
+    $('#linear').click(function () {
+        let data = $('#data-area').val()
+        if (data) {
+            data = JSON.parse(data)
+            console.log(data)
+            chart_init(data)
+        }
+    })
+
+    $('#linear-back').click(function () {
+        let data = $('#data-area').val()
+        if (data) {
+            data = JSON.parse(data)
+            console.log(data)
+            $.ajax({
+                url: "http://localhost:8080/demo/data/deal",
+                data: JSON.stringify({
+                    data: data
+                }),
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (res) {
+                    console.log(res)
+                }
+            });
+            chart_init(data)
+        }
+    })
 
     //写cookies
     function setCookie(cname, cvalue, exminites) {
