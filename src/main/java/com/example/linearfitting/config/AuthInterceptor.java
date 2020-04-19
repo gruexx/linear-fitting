@@ -1,7 +1,6 @@
 package com.example.linearfitting.config;
 
 import com.example.linearfitting.entity.base.Auth;
-import com.example.linearfitting.entity.user.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         String url = request.getRequestURI();
         log.info("|url:{}|^_^|preHandle", url);
-
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Content-type", "application/json;charset=UTF-8");
 
         if (handler instanceof HandlerMethod) {
             HandlerMethod method = (HandlerMethod) handler;
