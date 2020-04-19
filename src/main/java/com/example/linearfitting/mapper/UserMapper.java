@@ -11,7 +11,7 @@ public interface UserMapper {
 
     Integer update(@Param("user") UserDTO user);
 
-    String findPassword(@Param("user") UserDTO user);
+    UserDTO findPassword(@Param("user") UserDTO user);
 
     Integer isExist(@Param("name") String name);
 }

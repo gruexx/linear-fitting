@@ -25,7 +25,7 @@ public interface UserService {
      * @param request
      * @return
      */
-    Boolean login(UserDTO user, HttpServletResponse response, HttpServletRequest request);
+    UserDTO login(UserDTO user, HttpServletResponse response, HttpServletRequest request);
 
     Object data(Integer id);
 

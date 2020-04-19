@@ -40,20 +40,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean login(UserDTO user, HttpServletResponse response, HttpServletRequest request) {
-        if (getTokenFromKey(request.getCookies(), "token") != null) {
-            return false;
-        }
-
-        if (user.getPassword().equals(userMapper.findPassword(user))) {
-            Cookie cookie = new Cookie("token", UUID.randomUUID().toString());
+    public UserDTO login(UserDTO user, HttpServletResponse response, HttpServletRequest request) {
+        UserDTO dto = userMapper.findPassword(user);
+        if (user.getPassword().equals(dto.getPassword())) {
+            Cookie cookie = new Cookie("token", dto.getId().toString());
             cookie.setComment("token");
             cookie.setPath("/demo");
             cookie.setMaxAge(30 * 60);
             response.addCookie(cookie);
-            return true;
+            return dto;
         }
-        return false;
+        return null;
     }
 
     private String getTokenFromKey(Cookie[] cookies, String key) {

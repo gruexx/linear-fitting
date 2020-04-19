@@ -45,18 +45,12 @@
         where id=#{user.id}
     </update>
 
-    <select id="findPassword" resultType="java.lang.String">
-        select password
+    <select id="findPassword" resultType="com.example.linearfitting.entity.user.UserDTO">
+        select *
         from `user`
         where 1=1
         <if test="user.name != null">
             and `name`=#{user.name}
-        </if>
-        <if test="user.email != null">
-            and email=#{user.email}
-        </if>
-        <if test="user.phone != null">
-            and phone=#{user.phone}
         </if>
 
     </select>
