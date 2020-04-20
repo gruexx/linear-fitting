@@ -40,7 +40,7 @@ public class ExcelReader implements FileReader {
                 if (Objects.nonNull(row.getCell(0)) && Objects.nonNull(row.getCell(0).getStringCellValue())) {
 
                     Double x = Double.valueOf(row.getCell(0).getStringCellValue());
-                    Double y = Double.valueOf(row.getCell(0).getStringCellValue());
+                    Double y = Double.valueOf(row.getCell(1).getStringCellValue());
 
                     tmp.add(x);
                     tmp.add(y);
