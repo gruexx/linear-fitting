@@ -27,9 +27,13 @@ public interface UserService {
      */
     UserDTO login(UserDTO user, HttpServletResponse response, HttpServletRequest request);
 
-    Object data(Integer id);
+    Object data(Integer userId);
 
     Object save(DataVO data);
 
     Boolean isExist(String name);
+
+    Object selectById(Integer id);
+
+    Object delete(Integer id);
 }

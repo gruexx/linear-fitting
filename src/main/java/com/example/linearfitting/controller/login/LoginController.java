@@ -68,15 +68,28 @@ public class LoginController {
     @ApiOperation("获取保存数据")
     @GetMapping("/data")
     @Auth
-    public Result<?> data(Integer id) {
-        return Result.success(userService.data(id));
+    public Result<?> data(Integer userId) {
+        return Result.success(userService.data(userId));
     }
 
-    @ApiOperation("获取保存数据")
+    @ApiOperation("保存数据")
     @PostMapping("/save")
     @Auth
     public Result<?> save(@RequestBody DataVO data) {
         return Result.success(userService.save(data));
     }
 
+    @ApiOperation("根据数据id查数据")
+    @GetMapping("/selectById")
+    @Auth
+    public Result<?> selectById(Integer id) {
+        return Result.success(userService.selectById(id));
+    }
+
+    @ApiOperation("删除数据")
+    @PostMapping("/delete")
+    @Auth
+    public Result<?> delete(Integer id) {
+        return Result.success(userService.delete(id));
+    }
 }

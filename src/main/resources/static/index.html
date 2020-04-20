@@ -86,7 +86,8 @@
                 <h1 class="h3 mb-3 font-weight-normal">账户信息</h1></a>
                 <p class="blog-post-meta">当前用户 <a href="#" id="display-username">Jacob</a></p>
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-block">保存当前数据</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm btn-block">获取历史数据</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-block" id="history-data">获取历史数据
+                </button>
                 <div class="table-responsive mt-3">
                     <table class="table table-sm">
                         <caption style="display: none">List of History</caption>
@@ -208,238 +209,272 @@
         });
     });
 
-    $("#login_btn").click(function () {
-        let username = $("#loginUsername").val()
-        let password = $("#loginPassword").val()
-        console.log(username)
-        console.log(password)
+    //历史数据
+    $("#history-data").click(function () {
+        let user = getCookie("userinfo");
+        console.log(user.id)
         $.ajax({
-            url: "http://localhost:8080/demo/user/login",
-            data: {
-                name: username,
-                password: password
-            },
             type: "GET",
+            url: "http://localhost:8080/demo/user/data",
+            data: {
+                userId: user.id
+            },
             dataType: "json",
             ContentType: "application/json",
             success: function (res) {
-                console.log(res)
-                if (!res.data) {
-                    removeSmallTxt();
-                    $('#msg1').attr("style", "display:block");
-                } else {
-                    login_init(res.data);
-                }
+                console.log(res.data)
             }
-        });
+        })
     });
 
-    $("#register_btn").click(function () {
-        let username = $("#regUsername").val()
-        let password = $("#regPassword").val()
-        console.log(username)
-        console.log(password)
+    //删除数据
+    function deleteData(id) {
+        console.log(id);
         $.ajax({
-            url: "http://localhost:8080/demo/user/register",
-            data: JSON.stringify({
-                name: username,
-                password: password
-            }),
             type: "POST",
+            url: "http://localhost:8080/demo/user/data",
+            data: {
+                userId: id
+            },
             dataType: "json",
-            contentType: "application/json; charset=utf-8",
+            ContentType: "application/json",
             success: function (res) {
-                console.log(res)
-                if (res.data) {
-                    removeSmallTxt();
-                    $('#msg2').attr("style", "display:block");
-                } else {
-                    removeSmallTxt();
-                    $('#msg3').attr("style", "display:block");
-                }
+                console.log(res.data)
             }
-        });
-    });
-
-    $("#login_tab").click(function () {
-        $('#login_tab').attr("class", "nav-link disabled");
-        $('#reg_tab').attr("class", "nav-link active");
-        $('#login_form').attr("style", "display:block");
-        $('#reg_form').attr("style", "display:none");
-    });
-
-    $("#reg_tab").click(function () {
-        $('#login_tab').attr("class", "nav-link active");
-        $('#reg_tab').attr("class", "nav-link disabled");
-        $('#login_form').attr("style", "display:none");
-        $('#reg_form').attr("style", "display:block");
-    });
-
-    let data = [
-        [1, 2],
-        [3, 5],
-        [4, 6],
-        [4.5, 4]
-    ];
-
-    function chart_init(data) {
-        console.log(data)
-        let myChart = echarts.init(document.getElementById('main'));
-
-        let myRegression = ecStat.regression('linear', data);
-        console.log(myRegression)
-        let newExp = 'F(x)= ' + myRegression.parameter.gradient + 'x' + ' + ' + myRegression.parameter.intercept
-        $('#data-fx').text('结果：' + newExp);
-        $('#data-area').val(JSON.stringify(data));
-
-
-        myChart.setOption({
-            title: {
-                subtext: newExp,
-                left: 'center'
-            },
-            toolbox: {
-                feature: {
-                    saveAsImage: {},
-                    dataView: {}
-                }
-            },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'cross'
-                }
-            },
-            xAxis: {
-                name: 'x',
-                type: 'value',
-                splitLine: {
-                    lineStyle: {
-                        type: 'dashed'
-                    }
-                },
-            },
-            yAxis: {
-                name: 'F(x)',
-                type: 'value',
-                min: 1.5,
-                splitLine: {
-                    lineStyle: {
-                        type: 'dashed'
-                    }
-                },
-            },
-            series: [{
-                name: 'scatter',
-                type: 'scatter',
-                label: {
-                    emphasis: {
-                        show: true
-                    }
-                },
-                data: data
-            }, {
-                name: 'line',
-                type: 'line',
-                showSymbol: true,
-                data: myRegression.points,
-                markPoint: {
-                    itemStyle: {
-                        normal: {
-                            color: 'transparent'
-                        }
-                    },
-                    // label: {
-                    //     normal: {
-                    //         show: true,
-                    //         position: 'left',
-                    //         formatter: myRegression.expression,
-                    //         textStyle: {
-                    //             color: '#333',
-                    //             fontSize: 14
-                    //         }
-                    //     }
-                    // },
-                    data: [{
-                        coord: myRegression.points[myRegression.points.length - 1]
-                    }]
-                }
-            }]
-        });
-        window.onresize = function () {
-            myChart.resize();
         }
-    }
 
-    chart_init(data)
-
-    $('#linear').click(function () {
-        let data = $('#data-area').val()
-        if (data) {
-            data = JSON.parse(data)
-            console.log(data)
-            chart_init(data)
-        }
-    })
-
-    $('#linear-back').click(function () {
-        let data = $('#data-area').val()
-        if (data) {
-            data = JSON.parse(data)
-            console.log(data)
+        $("#login_btn").click(function () {
+            let username = $("#loginUsername").val()
+            let password = $("#loginPassword").val()
+            console.log(username)
+            console.log(password)
             $.ajax({
-                url: "http://localhost:8080/demo/data/deal",
+                url: "http://localhost:8080/demo/user/login",
+                data: {
+                    name: username,
+                    password: password
+                },
+                type: "GET",
+                dataType: "json",
+                ContentType: "application/json",
+                success: function (res) {
+                    console.log(res)
+                    if (!res.data) {
+                        removeSmallTxt();
+                        $('#msg1').attr("style", "display:block");
+                    } else {
+                        login_init(res.data);
+                    }
+                }
+            });
+        });
+
+        $("#register_btn").click(function () {
+            let username = $("#regUsername").val()
+            let password = $("#regPassword").val()
+            console.log(username)
+            console.log(password)
+            $.ajax({
+                url: "http://localhost:8080/demo/user/register",
                 data: JSON.stringify({
-                    result: data
+                    name: username,
+                    password: password
                 }),
                 type: "POST",
                 dataType: "json",
-                contentType: "application/json",
+                contentType: "application/json; charset=utf-8",
                 success: function (res) {
                     console.log(res)
+                    if (res.data) {
+                        removeSmallTxt();
+                        $('#msg2').attr("style", "display:block");
+                    } else {
+                        removeSmallTxt();
+                        $('#msg3').attr("style", "display:block");
+                    }
                 }
             });
-            chart_init(data)
-        }
-    })
+        });
 
-    //写cookies
-    function setCookie(cname, cvalue, exminites) {
-        let d = new Date();
-        d.setTime(d.getTime() + (exminites * 60 * 1000));
-        let expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-    }
+        $("#login_tab").click(function () {
+            $('#login_tab').attr("class", "nav-link disabled");
+            $('#reg_tab').attr("class", "nav-link active");
+            $('#login_form').attr("style", "display:block");
+            $('#reg_form').attr("style", "display:none");
+        });
 
-    //读取cookies
-    function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
+        $("#reg_tab").click(function () {
+            $('#login_tab').attr("class", "nav-link active");
+            $('#reg_tab').attr("class", "nav-link disabled");
+            $('#login_form').attr("style", "display:none");
+            $('#reg_form').attr("style", "display:block");
+        });
+
+        let data = [
+            [1, 2],
+            [3, 5],
+            [4, 6],
+            [4.5, 4]
+        ];
+
+        function chart_init(data) {
+            console.log(data)
+            let myChart = echarts.init(document.getElementById('main'));
+
+            let myRegression = ecStat.regression('linear', data);
+            console.log(myRegression)
+            let newExp = 'F(x)= ' + myRegression.parameter.gradient + 'x' + ' + ' + myRegression.parameter.intercept
+            $('#data-fx').text('结果：' + newExp);
+            $('#data-area').val(JSON.stringify(data));
+
+
+            myChart.setOption({
+                title: {
+                    subtext: newExp,
+                    left: 'center'
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {},
+                        dataView: {}
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                xAxis: {
+                    name: 'x',
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed'
+                        }
+                    },
+                },
+                yAxis: {
+                    name: 'F(x)',
+                    type: 'value',
+                    min: 1.5,
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed'
+                        }
+                    },
+                },
+                series: [{
+                    name: 'scatter',
+                    type: 'scatter',
+                    label: {
+                        emphasis: {
+                            show: true
+                        }
+                    },
+                    data: data
+                }, {
+                    name: 'line',
+                    type: 'line',
+                    showSymbol: true,
+                    data: myRegression.points,
+                    markPoint: {
+                        itemStyle: {
+                            normal: {
+                                color: 'transparent'
+                            }
+                        },
+                        // label: {
+                        //     normal: {
+                        //         show: true,
+                        //         position: 'left',
+                        //         formatter: myRegression.expression,
+                        //         textStyle: {
+                        //             color: '#333',
+                        //             fontSize: 14
+                        //         }
+                        //     }
+                        // },
+                        data: [{
+                            coord: myRegression.points[myRegression.points.length - 1]
+                        }]
+                    }
+                }]
+            });
+            window.onresize = function () {
+                myChart.resize();
             }
         }
-        return "";
-    }
 
-    //检查cookies
-    function checkCookie() {
-        var user = getCookie("username");
-        if (user != "") {
-            alert("Welcome again " + user);
-        } else {
-            user = prompt("Please enter your name:", "");
-            if (user != "" && user != null) {
-                setCookie("username", user, 365);
+        chart_init(data)
+
+        $('#linear').click(function () {
+            let data = $('#data-area').val()
+            if (data) {
+                data = JSON.parse(data)
+                console.log(data)
+                chart_init(data)
+            }
+        })
+
+        $('#linear-back').click(function () {
+            let data = $('#data-area').val()
+            if (data) {
+                data = JSON.parse(data)
+                console.log(data)
+                $.ajax({
+                    url: "http://localhost:8080/demo/data/deal",
+                    data: JSON.stringify({
+                        result: data
+                    }),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (res) {
+                        console.log(res)
+                    }
+                });
+                chart_init(data)
+            }
+        })
+
+        //写cookies
+        function setCookie(cname, cvalue, exminites) {
+            let d = new Date();
+            d.setTime(d.getTime() + (exminites * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        //读取cookies
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        //检查cookies
+        function checkCookie() {
+            var user = getCookie("username");
+            if (user != "") {
+                alert("Welcome again " + user);
+            } else {
+                user = prompt("Please enter your name:", "");
+                if (user != "" && user != null) {
+                    setCookie("username", user, 365);
+                }
             }
         }
-    }
 </script>
 
 <!-- http://47.93.123.132/linear/demo/user/login -->

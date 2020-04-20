@@ -15,5 +15,7 @@ public class DataVO {
 
     private String data;
 
+    private String name;
+
     private List<List<Double>> result;
 }

@@ -66,8 +66,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Object data(Integer id) {
-        List<DataVO> dataVO = dataMapper.getData(id);
+    public Object data(Integer userId) {
+        List<DataVO> dataVO = dataMapper.getData(userId);
         for (DataVO vo : dataVO) {
             vo.setResult(transFor(vo.getData()));
         }
@@ -87,6 +87,16 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Object selectById(Integer id) {
+        return dataMapper.selectById(id);
+    }
+
+    @Override
+    public Object delete(Integer id) {
+        return dataMapper.delete(id);
     }
 
     private List<List<Double>> transFor(String string) {

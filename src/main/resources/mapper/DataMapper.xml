@@ -5,14 +5,26 @@
         <id column="id" property="id"/>
         <result column="data" property="data"/>
         <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
     </resultMap>
     <insert id="insert">
-        insert into `data`(`data`,user_id) value(#{data.data},#{data.userId})
+        insert into `data`(`data`,user_id,`name`) value(#{data.data},#{data.userId},#{data.name})
     </insert>
+    <delete id="delete">
+        delete
+        from   `data`
+        where id = #{id}
+    </delete>
 
     <select id="getData" resultType="com.example.linearfitting.entity.user.DataVO">
         select  *
         from   `data`
-        where user_id = #{id}
+        where user_id = #{userId}
+    </select>
+
+    <select id="selectById" resultType="com.example.linearfitting.entity.user.DataVO">
+        select  *
+        from   `data`
+        where id = #{id}
     </select>
 </mapper>
