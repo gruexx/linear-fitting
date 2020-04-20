@@ -32,7 +32,7 @@ public class DataController {
     }
 
     @ApiOperation("处理数据")
-    @GetMapping("/deal")
+    @PostMapping("/deal")
     public Result<?> deal(@RequestBody DataVO data) {
 
         return Result.success(dataService.getResult(data.getResult()));
