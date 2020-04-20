@@ -22,10 +22,12 @@
                         border-bottom">
                 <h1 class="h2">线性回归分析</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group mr-2">
-                        <button type="button" class="btn btn-sm
-                                    btn-outline-primary">解析文件
-                        </button>
+                    <div class="btn-group mr-2" id="uploadForm">
+                        <!--                        <button type="button" class="btn btn-sm-->
+                        <!--                                    btn-outline-primary">-->
+                        <!--                        </button>-->
+                        <input id="file" type="file" accept=".txt, .csv, .xls, .xlsx"/>
+                        <button id="upload" type="button">解析文件</button>
                     </div>
                 </div>
             </div>
@@ -186,6 +188,25 @@
         $('#display-username').html(userinfo.name)
         console.log($('#display-username').html())
     }
+
+    $("#upload").on("click", function () {
+        var file = $('#file')[0].files[0];
+        var formData = new FormData();
+        formData.append("file", file);
+        $.ajax({
+            type: 'POST',
+            url: "http://localhost:8080/demo/data/upload",
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                $('#data-area').val(JSON.stringify(result.data));
+            },
+            error: function (err) {
+            }
+        });
+    });
 
     $("#login_btn").click(function () {
         let username = $("#loginUsername").val()

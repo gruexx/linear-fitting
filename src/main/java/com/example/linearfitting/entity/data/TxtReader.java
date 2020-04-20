@@ -28,7 +28,7 @@ public class TxtReader implements FileReader {
                     continue;
                 }
                 List<Double> tmp = new ArrayList<>();
-                String[] split = line.split(" ");
+                String[] split = line.split(",");
                 for (int j = 0; j < 2; j++) {
                     tmp.add(Double.valueOf(split[j]));
                 }

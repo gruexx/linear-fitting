@@ -6,10 +6,7 @@ import com.example.linearfitting.service.DataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -28,8 +25,8 @@ public class DataController {
     private DataService dataService;
 
     @ApiOperation("上传数据")
-    @GetMapping("/upload")
-    public Result<?> upload(MultipartFile file) {
+    @PostMapping("/upload")
+    public Result<?> upload(@RequestParam("file") MultipartFile file) {
 
         return Result.success(dataService.getData(file));
     }

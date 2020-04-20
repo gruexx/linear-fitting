@@ -17,6 +17,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class DataServiceImpl implements DataService {
+    private final static String CSV_FILE = "csv";
 
     private DataVO countDataVO(List<List<Double>> data) {
         SimpleRegression regression = new SimpleRegression();
