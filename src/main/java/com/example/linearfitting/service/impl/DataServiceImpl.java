@@ -37,7 +37,16 @@ public class DataServiceImpl implements DataService {
     @Override
     public Object getData(MultipartFile file) {
 
-        FileReader fileReader = FileTypeEnum.getClazz(file.getContentType());
+        Class clazz = FileTypeEnum.getClazz(file.getContentType());
+
+        FileReader fileReader = null;
+        try {
+            fileReader = (FileReader) clazz.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         return fileReader.readFile(file);
     }
