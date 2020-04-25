@@ -35,11 +35,14 @@
             <h2>数据</h2>
             <form>
                 <div class="form-group">
-                    <label for="data-area" id="data-fx"></label>
+                    <label for="data-area"></label>
                     <textarea class="form-control" id="data-area" rows="3"></textarea>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" id="data-fx"></li>
+                        <li class="list-group-item" id="data-er"></li>
+                    </ul>
                 </div>
-                <button type="button" class="btn btn-outline-dark" id="linear">数据分析</button>
-                <button type="button" class="btn btn-outline-dark" id="linear-back">数据分析(后端)</button>
+                <button type="button" class="btn btn-outline-dark" id="linear-back">数据分析</button>
             </form>
         </div>
 
@@ -82,30 +85,21 @@
                     </block>
                 </div>
             </div>
-            <div class="blog-post" style="display: none" id="userinfo">
-                <h1 class="h3 mb-3 font-weight-normal">账户信息</h1></a>
+            <div class="blog-post mt-3" style="display: none" id="userinfo">
+                <h1 class="h3 mb-3 font-weight-normal">账户信息</h1>
                 <p class="blog-post-meta">当前用户 <a href="#" id="display-username">Jacob</a></p>
-                <button type="button" class="btn btn-outline-secondary btn-sm btn-block">保存当前数据</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm btn-block" id="history-data">获取历史数据
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal"
+                        data-target="#data_save_modal" data-whatever="@mdo">保存当前数据
                 </button>
-                <div class="table-responsive mt-3">
+                <div class="table-responsive mt-3" id="my_data" style="display: none">
                     <table class="table table-sm">
-                        <caption style="display: none">List of History</caption>
+                        <caption style="display: none">List of Mine</caption>
                         <thead class="thead-dark">
                         <tr>
-                            <th scope="col">历史数据</th>
+                            <th scope="col">我的数据</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td><a href="#">20200423</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="#">1221</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="#">12321</a></td>
-                        </tr>
+                        <tbody id="my_tab">
                         </tbody>
                     </table>
                 </div>
@@ -114,10 +108,56 @@
     </div>
 </div>
 
+<div class="modal fade" id="data_save_modal" tabindex="-1" role="dialog" aria-labelledby="ml1"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ml1">提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="data_name" class="col-form-label">给数据起个名字吧:</label>
+                        <input type="text" class="form-control" id="data_name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="save_data">保存数据</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="data_edit_modal" tabindex="-1" role="dialog" aria-labelledby="ml2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ml2">提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="data_info_dis">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark" id="data_use">使用当前数据</button>
+                <button type="button" class="btn btn-danger" id="data_del">删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 
 </html>
-<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
 </script>
@@ -125,78 +165,43 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
 </script>
 <script src="dist/js/echarts.js"></script>
-<script src='./dist/js/ecStat.js'></script>
+<script src='dist/js/ecStat.js'></script>
 <script>
+    const PREFIX = 'http://localhost:8080/demo'
+
+    let data = [
+        [0, 0],
+        [1, 1]
+    ];
+
+    // 初始化
+    init();
+    chart_init(data)
+
     function init() {
         let userinfo = getCookie('userinfo')
-        console.log(userinfo)
+        // console.log(userinfo)
         if (userinfo) {
             login_init(JSON.parse(userinfo))
         }
     }
-
-    init();
-
-    function removeSmallTxt() {
-        $('#msg1').attr("style", "display:none");
-        $('#msg2').attr("style", "display:none");
-        $('#msg3').attr("style", "display:none");
-        $('#msg4').attr("style", "display:none");
-        $('#msg5').attr("style", "display:none");
-        $('#msg6').attr("style", "display:none");
-    }
-
-
-    $("#regUsername").blur(function () {
-        let username = $("#regUsername").val()
-        if (username === "") {
-            removeSmallTxt();
-            $('#msg4').attr("style", "display:block");
-        } else {
-            $.ajax({
-                url: "http://localhost:8080/demo/user/isExist",
-                data: {
-                    name: username
-                },
-                type: "GET",
-                dataType: "json",
-                ContentType: "application/json",
-                success: function (res) {
-                    console.log(res)
-                    if (res.data) {
-                        removeSmallTxt();
-                        $('#msg5').attr("style", "display:block");
-                    }
-                }
-            });
-        }
-    });
-
-    $("#regPassword").blur(function () {
-        let password = $("#regPassword").val()
-        if (password === "") {
-            removeSmallTxt();
-            $('#msg6').attr("style", "display:block");
-        } else {
-            removeSmallTxt();
-        }
-    });
 
     function login_init(userinfo) {
         setCookie('userinfo', JSON.stringify(userinfo), 60)
         $('#login_box').attr("style", "display:none");
         $('#userinfo').attr("style", "display:block");
         $('#display-username').html(userinfo.name)
-        console.log($('#display-username').html())
+        get_my_data(userinfo.id)
     }
 
+    // 上传文件
     $("#upload").on("click", function () {
         var file = $('#file')[0].files[0];
         var formData = new FormData();
         formData.append("file", file);
         $.ajax({
             type: 'POST',
-            url: "http://localhost:8080/demo/data/upload",
+            url: PREFIX + "/data/upload",
             cache: false,
             data: formData,
             processData: false,
@@ -209,272 +214,389 @@
         });
     });
 
-    //历史数据
-    $("#history-data").click(function () {
-        let user = getCookie("userinfo");
-        console.log(user.id)
+    // 获取我的数据
+    function get_my_data() {
+        let userinfo = JSON.parse(getCookie('userinfo'))
         $.ajax({
             type: "GET",
-            url: "http://localhost:8080/demo/user/data",
+            url: PREFIX + "/user/data",
             data: {
-                userId: user.id
+                userId: userinfo.id
             },
             dataType: "json",
-            ContentType: "application/json",
+            contentType: "application/json",
             success: function (res) {
-                console.log(res.data)
+                // console.log('my data', res)
+                let data_list = res.data
+                if (data_list.length) {
+                    $('#my_data').attr('style', 'display:block')
+                    let trs = [];
+                    let trDom;
+                    for (let i = 0; i < data_list.length; i++) {
+                        let func = 'get_one_data(' + data_list[i].id + ')'
+                        trDom = $('<tr></tr>');
+                        $('<td><a onclick=' + func + ' href="#">' + data_list[i].name + '</a></td>').appendTo(trDom);
+                        trDom.appendTo($('#my_tab'));
+                    }
+                    // window.localStorage.setItem('my_data', JSON.stringify(data_list))
+                }
             }
         })
-    });
+    }
 
-    //删除数据
-    function deleteData(id) {
-        console.log(id);
+    // 获取一条数据
+    function get_one_data(data_id) {
+        // console.log(data_id)
         $.ajax({
-            type: "POST",
-            url: "http://localhost:8080/demo/user/data",
+            type: "GET",
+            url: PREFIX + "/user/selectById",
             data: {
-                userId: id
+                id: data_id,
             },
             dataType: "json",
-            ContentType: "application/json",
+            contentType: "application/json",
             success: function (res) {
-                console.log(res.data)
+                // console.log(res)
+                let data_info = res.data
+                if (data_info) {
+                    window.localStorage.setItem('my_data', JSON.stringify(data_info))
+                    $('#data_info_dis').text(JSON.stringify(data_info.data))
+                    $('#data_edit_modal').modal('show')
+                }
             }
-        }
+        })
+    }
 
-        $("#login_btn").click(function () {
-            let username = $("#loginUsername").val()
-            let password = $("#loginPassword").val()
-            console.log(username)
-            console.log(password)
+    // 使用当前数据
+    $("#data_use").click(function () {
+        data_info = JSON.parse(window.localStorage.getItem('my_data'))
+        // console.log(data_info)
+        $("#data-area").val(data_info.data)
+        $('#data_edit_modal').modal('hide')
+    })
+
+    //删除数据
+    $("#data_del").click(function () {
+        data_info = JSON.parse(window.localStorage.getItem('my_data'))
+        console.log(data_info.id)
+        if (data_info.id) {
             $.ajax({
-                url: "http://localhost:8080/demo/user/login",
+                type: "POST",
+                url: PREFIX + "/user/delete",
                 data: {
-                    name: username,
-                    password: password
+                    id: data_info.id
                 },
-                type: "GET",
                 dataType: "json",
-                ContentType: "application/json",
+                contentType: "application/json",
                 success: function (res) {
                     console.log(res)
-                    if (!res.data) {
-                        removeSmallTxt();
-                        $('#msg1').attr("style", "display:block");
-                    } else {
-                        login_init(res.data);
-                    }
+                },
+                complete: function () {
+                    $('#data_edit_modal').modal('hide')
                 }
-            });
-        });
+            })
+        }
+    })
 
-        $("#register_btn").click(function () {
-            let username = $("#regUsername").val()
-            let password = $("#regPassword").val()
-            console.log(username)
-            console.log(password)
+    // 保存数据
+    $("#save_data").click(function () {
+        let userinfo = JSON.parse(getCookie('userinfo'))
+        let data = $('#data-area').val()
+        let name = $('#data_name').val()
+        if (!name) {
+            name = $('#data_name').attr('placeholder')
+        }
+        $.ajax({
+            type: "POST",
+            url: PREFIX + "/user/save",
+            data: JSON.stringify({
+                userId: userinfo.id,
+                name: name,
+                result: JSON.parse(data)
+            }),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (res) {
+                // // console.log(res)
+                $('#data_save_modal').modal('hide')
+                get_my_data(userinfo.id)
+            }
+        })
+    })
+
+    // 线性回归分析
+    $('#linear-back').click(function () {
+        let data = $('#data-area').val()
+        if (data) {
+            data = JSON.parse(data)
+            // console.log(data)
             $.ajax({
-                url: "http://localhost:8080/demo/user/register",
+                url: PREFIX + "/data/deal",
                 data: JSON.stringify({
-                    name: username,
-                    password: password
+                    result: data
                 }),
                 type: "POST",
                 dataType: "json",
-                contentType: "application/json; charset=utf-8",
+                contentType: "application/json",
                 success: function (res) {
-                    console.log(res)
+                    // console.log(res)
+                    chart_init(data, res.data)
+                },
+                fail: function () {
+                    chart_init(data)
+                }
+            });
+        }
+    })
+
+    // 移除登录注册提示
+    function removeSmallTxt() {
+        $('#msg1').attr("style", "display:none");
+        $('#msg2').attr("style", "display:none");
+        $('#msg3').attr("style", "display:none");
+        $('#msg4').attr("style", "display:none");
+        $('#msg5').attr("style", "display:none");
+        $('#msg6').attr("style", "display:none");
+    }
+
+    // 注册校验重名
+    $("#regUsername").blur(function () {
+        let username = $("#regUsername").val()
+        if (username === "") {
+            removeSmallTxt();
+            $('#msg4').attr("style", "display:block");
+        } else {
+            $.ajax({
+                url: PREFIX + "/user/isExist",
+                data: {
+                    name: username
+                },
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (res) {
+                    // console.log(res)
                     if (res.data) {
                         removeSmallTxt();
-                        $('#msg2').attr("style", "display:block");
-                    } else {
-                        removeSmallTxt();
-                        $('#msg3').attr("style", "display:block");
+                        $('#msg5').attr("style", "display:block");
                     }
                 }
             });
-        });
-
-        $("#login_tab").click(function () {
-            $('#login_tab').attr("class", "nav-link disabled");
-            $('#reg_tab').attr("class", "nav-link active");
-            $('#login_form').attr("style", "display:block");
-            $('#reg_form').attr("style", "display:none");
-        });
-
-        $("#reg_tab").click(function () {
-            $('#login_tab').attr("class", "nav-link active");
-            $('#reg_tab').attr("class", "nav-link disabled");
-            $('#login_form').attr("style", "display:none");
-            $('#reg_form').attr("style", "display:block");
-        });
-
-        let data = [
-            [1, 2],
-            [3, 5],
-            [4, 6],
-            [4.5, 4]
-        ];
-
-        function chart_init(data) {
-            console.log(data)
-            let myChart = echarts.init(document.getElementById('main'));
-
-            let myRegression = ecStat.regression('linear', data);
-            console.log(myRegression)
-            let newExp = 'F(x)= ' + myRegression.parameter.gradient + 'x' + ' + ' + myRegression.parameter.intercept
-            $('#data-fx').text('结果：' + newExp);
-            $('#data-area').val(JSON.stringify(data));
-
-
-            myChart.setOption({
-                title: {
-                    subtext: newExp,
-                    left: 'center'
-                },
-                toolbox: {
-                    feature: {
-                        saveAsImage: {},
-                        dataView: {}
-                    }
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'cross'
-                    }
-                },
-                xAxis: {
-                    name: 'x',
-                    type: 'value',
-                    splitLine: {
-                        lineStyle: {
-                            type: 'dashed'
-                        }
-                    },
-                },
-                yAxis: {
-                    name: 'F(x)',
-                    type: 'value',
-                    min: 1.5,
-                    splitLine: {
-                        lineStyle: {
-                            type: 'dashed'
-                        }
-                    },
-                },
-                series: [{
-                    name: 'scatter',
-                    type: 'scatter',
-                    label: {
-                        emphasis: {
-                            show: true
-                        }
-                    },
-                    data: data
-                }, {
-                    name: 'line',
-                    type: 'line',
-                    showSymbol: true,
-                    data: myRegression.points,
-                    markPoint: {
-                        itemStyle: {
-                            normal: {
-                                color: 'transparent'
-                            }
-                        },
-                        // label: {
-                        //     normal: {
-                        //         show: true,
-                        //         position: 'left',
-                        //         formatter: myRegression.expression,
-                        //         textStyle: {
-                        //             color: '#333',
-                        //             fontSize: 14
-                        //         }
-                        //     }
-                        // },
-                        data: [{
-                            coord: myRegression.points[myRegression.points.length - 1]
-                        }]
-                    }
-                }]
-            });
-            window.onresize = function () {
-                myChart.resize();
-            }
         }
+    });
 
-        chart_init(data)
-
-        $('#linear').click(function () {
-            let data = $('#data-area').val()
-            if (data) {
-                data = JSON.parse(data)
-                console.log(data)
-                chart_init(data)
-            }
-        })
-
-        $('#linear-back').click(function () {
-            let data = $('#data-area').val()
-            if (data) {
-                data = JSON.parse(data)
-                console.log(data)
-                $.ajax({
-                    url: "http://localhost:8080/demo/data/deal",
-                    data: JSON.stringify({
-                        result: data
-                    }),
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json",
-                    success: function (res) {
-                        console.log(res)
-                    }
-                });
-                chart_init(data)
-            }
-        })
-
-        //写cookies
-        function setCookie(cname, cvalue, exminites) {
-            let d = new Date();
-            d.setTime(d.getTime() + (exminites * 60 * 1000));
-            let expires = "expires=" + d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    // 注册校验密码
+    $("#regPassword").blur(function () {
+        let password = $("#regPassword").val()
+        if (password === "") {
+            removeSmallTxt();
+            $('#msg6').attr("style", "display:block");
+        } else {
+            removeSmallTxt();
         }
+    });
 
-        //读取cookies
-        function getCookie(cname) {
-            var name = cname + "=";
-            var decodedCookie = decodeURIComponent(document.cookie);
-            var ca = decodedCookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
+    // 登录
+    $("#login_btn").click(function () {
+        let username = $("#loginUsername").val()
+        let password = $("#loginPassword").val()
+        // console.log(username)
+        // console.log(password)
+        $.ajax({
+            url: PREFIX + "/user/login",
+            data: {
+                name: username,
+                password: password
+            },
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (res) {
+                // console.log(res)
+                if (!res.data) {
+                    removeSmallTxt();
+                    $('#msg1').attr("style", "display:block");
+                } else {
+                    login_init(res.data);
                 }
             }
-            return "";
-        }
+        });
+    });
 
-        //检查cookies
-        function checkCookie() {
-            var user = getCookie("username");
-            if (user != "") {
-                alert("Welcome again " + user);
-            } else {
-                user = prompt("Please enter your name:", "");
-                if (user != "" && user != null) {
-                    setCookie("username", user, 365);
+    // 注册
+    $("#register_btn").click(function () {
+        let username = $("#regUsername").val()
+        let password = $("#regPassword").val()
+        // console.log(username)
+        // console.log(password)
+        $.ajax({
+            url: PREFIX + "/user/register",
+            data: JSON.stringify({
+                name: username,
+                password: password
+            }),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (res) {
+                // console.log(res)
+                if (res.data) {
+                    removeSmallTxt();
+                    $('#msg2').attr("style", "display:block");
+                } else {
+                    removeSmallTxt();
+                    $('#msg3').attr("style", "display:block");
                 }
             }
+        });
+    });
+
+    $("#login_tab").click(function () {
+        $('#login_tab').attr("class", "nav-link disabled");
+        $('#reg_tab').attr("class", "nav-link active");
+        $('#login_form').attr("style", "display:block");
+        $('#reg_form').attr("style", "display:none");
+    });
+
+    $("#reg_tab").click(function () {
+        $('#login_tab').attr("class", "nav-link active");
+        $('#reg_tab').attr("class", "nav-link disabled");
+        $('#login_form').attr("style", "display:none");
+        $('#reg_form').attr("style", "display:block");
+    });
+
+    //写cookies
+    function setCookie(cname, cvalue, exminites) {
+        let d = new Date();
+        d.setTime(d.getTime() + (exminites * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    //读取cookies
+    function getCookie(cname) {
+        let name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
         }
+        return "";
+    }
+
+    //检查cookies
+    function checkCookie() {
+        var user = getCookie("username");
+        if (user !== "") {
+            alert("Welcome again " + user);
+        } else {
+            user = prompt("Please enter your name:", "");
+            if (user !== "" && user != null) {
+                setCookie("username", user, 365);
+            }
+        }
+    }
+
+    // 图形渲染
+    function chart_init(data, back_res) {
+        // console.log(data)
+        // console.log(back_res)
+        let myChart = echarts.init(document.getElementById('main'));
+
+        let myRegression = ecStat.regression('linear', data);
+        // console.log(myRegression)
+        let newExp = 'F(x)= ' + myRegression.parameter.gradient + 'x' + ' + ' + myRegression.parameter.intercept
+        $('#data-fx').text('表达式：' + newExp);
+        $('#data_name').attr('placeholder', newExp)
+        if (back_res) {
+            $('#data-er').text('拟合误差：' + back_res.fittingError);
+        }
+        $('#data-area').val(JSON.stringify(data));
+
+
+        myChart.setOption({
+            title: {
+                subtext: newExp,
+                left: 'center'
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {},
+                    dataView: {}
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            xAxis: {
+                name: 'x',
+                type: 'value',
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                },
+            },
+            yAxis: {
+                name: 'F(x)',
+                type: 'value',
+                // min: 1.5,
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                },
+            },
+            series: [{
+                name: 'scatter',
+                type: 'scatter',
+                label: {
+                    emphasis: {
+                        show: true
+                    }
+                },
+                data: data
+            }, {
+                name: 'line',
+                type: 'line',
+                showSymbol: true,
+                data: myRegression.points,
+                markPoint: {
+                    itemStyle: {
+                        normal: {
+                            color: 'transparent'
+                        }
+                    },
+                    // label: {
+                    //     normal: {
+                    //         show: true,
+                    //         position: 'left',
+                    //         formatter: myRegression.expression,
+                    //         textStyle: {
+                    //             color: '#333',
+                    //             fontSize: 14
+                    //         }
+                    //     }
+                    // },
+                    data: [{
+                        coord: myRegression.points[myRegression.points.length - 1]
+                    }]
+                }
+            }]
+        });
+        window.onresize = function () {
+            myChart.resize();
+        }
+    }
 </script>
 
 <!-- http://47.93.123.132/linear/demo/user/login -->
