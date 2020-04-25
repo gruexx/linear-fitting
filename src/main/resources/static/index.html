@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div style="height: 50vh;width: 100%;" id="main"></div>
-            <h2>数据</h2>
+            <h2>数据  <button type="button" class="btn btn-outline-dark ml-3" id="linear-back">数据分析</button></h2>
             <form>
                 <div class="form-group">
                     <label for="data-area"></label>
@@ -42,7 +42,6 @@
                         <li class="list-group-item" id="data-er"></li>
                     </ul>
                 </div>
-                <button type="button" class="btn btn-outline-dark" id="linear-back">数据分析</button>
             </form>
         </div>
 
@@ -176,7 +175,7 @@
 
     // 初始化
     init();
-    chart_init(data)
+    init_history();
 
     function init() {
         let userinfo = getCookie('userinfo')
@@ -186,12 +185,22 @@
         }
     }
 
+    function init_history() {
+        let history_data = window.localStorage.getItem('history_data')
+        if (!history_data) {
+            history_data = JSON.stringify(data)
+        }
+        console.log(history_data)
+        $('#data-area').val(history_data)
+        linear_back()
+    }
+
     function login_init(userinfo) {
         setCookie('userinfo', JSON.stringify(userinfo), 60)
         $('#login_box').attr("style", "display:none");
         $('#userinfo').attr("style", "display:block");
         $('#display-username').html(userinfo.name)
-        get_my_data(userinfo.id)
+        get_my_data()
     }
 
     // 上传文件
@@ -286,13 +295,12 @@
                 data: {
                     id: data_info.id
                 },
-                dataType: "json",
-                contentType: "application/json",
                 success: function (res) {
                     console.log(res)
                 },
                 complete: function () {
                     $('#data_edit_modal').modal('hide')
+                    window.location.reload()
                 }
             })
         }
@@ -319,13 +327,18 @@
             success: function (res) {
                 // // console.log(res)
                 $('#data_save_modal').modal('hide')
-                get_my_data(userinfo.id)
+                // get_my_data(userinfo.id)
+                window.location.reload()
             }
         })
     })
 
     // 线性回归分析
     $('#linear-back').click(function () {
+        linear_back()
+    })
+
+    function linear_back() {
         let data = $('#data-area').val()
         if (data) {
             data = JSON.parse(data)
@@ -347,7 +360,7 @@
                 }
             });
         }
-    })
+    }
 
     // 移除登录注册提示
     function removeSmallTxt() {
@@ -505,6 +518,9 @@
 
     // 图形渲染
     function chart_init(data, back_res) {
+        console.log(data)
+        window.localStorage.removeItem('history_data')
+        window.localStorage.setItem('history_data', JSON.stringify(data))
         // console.log(data)
         // console.log(back_res)
         let myChart = echarts.init(document.getElementById('main'));
