@@ -1,5 +1,7 @@
 server:
-  port: 8080
+  port: 8085
+  tomcat:
+    uri-encoding: UTF-8
 
 spring:
   mvc:
@@ -12,6 +14,12 @@ spring:
     username: root
     password: yansdouble
     driver-class-name: com.mysql.cj.jdbc.Driver
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.example.linear-fitting.entity
