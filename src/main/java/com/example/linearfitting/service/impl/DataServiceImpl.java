@@ -1,5 +1,6 @@
 package com.example.linearfitting.service.impl;
 
+import com.example.linearfitting.entity.data.CsvReader;
 import com.example.linearfitting.entity.data.DataVO;
 import com.example.linearfitting.entity.data.FileReader;
 import com.example.linearfitting.entity.data.FileTypeEnum;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author
@@ -39,10 +41,19 @@ public class DataServiceImpl implements DataService {
 
         FileReader fileReader = null;
         try {
-            fileReader = (FileReader) FileTypeEnum.getClazz(file.getContentType()).newInstance();
+            String filename = file.getOriginalFilename();
+            String res = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+            //特别开发  旧版本excel解析以及csv给客户，由于csv获取版本莫名其妙变成excel，特别开发
+            if (Objects.equals(res, CSV_FILE)) {
+                fileReader = new CsvReader();
+            } else {
+                fileReader = (FileReader) FileTypeEnum.getClazz(file.getContentType()).newInstance();
+            }
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

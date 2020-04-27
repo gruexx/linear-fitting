@@ -37,7 +37,8 @@ public class ExcelReader implements FileReader {
                     continue;
                 }
                 List<Double> tmp = new ArrayList<>();
-                if (Objects.nonNull(row.getCell(0)) && Objects.nonNull(row.getCell(0).getStringCellValue())) {
+                if (Objects.nonNull(row.getCell(0)) && Objects.nonNull(row.getCell(0).getStringCellValue()) &&
+                        Objects.nonNull(row.getCell(1)) && Objects.nonNull(row.getCell(1).getStringCellValue())) {
 
                     Double x = Double.valueOf(row.getCell(0).getStringCellValue());
                     Double y = Double.valueOf(row.getCell(1).getStringCellValue());
