@@ -47,12 +47,12 @@
                 <div class="form-signin">
                     <ul class="nav">
                         <li class="nav-item">
-                            <a class="nav-link disabled" href="#" id="login_tab"><h1 class="h3 mb-3 font-weight-normal"
-                                                                                     aria-disabled="true">登录</h1></a>
+                            <a class="nav-link active" href="#" id="login_tab" style="color: #0069d9">
+                                <h1 class="h3 mb-3 font-weight-normal" aria-disabled="true">登录</h1></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" tabindex="-1" aria-disabled="true" id="reg_tab"><h1
-                                    class="h3 mb-3 font-weight-normal">注册</h1></a>
+                            <a class="nav-link active" href="#" aria-disabled="true" id="reg_tab" style="color: grey">
+                                <h1 class="h3 mb-3 font-weight-normal">注册</h1></a>
                         </li>
                     </ul>
                     <block id="login_form" style="display: block">
@@ -462,15 +462,15 @@
     });
 
     $("#login_tab").click(function () {
-        $('#login_tab').attr("class", "nav-link disabled");
-        $('#reg_tab').attr("class", "nav-link active");
+        $('#login_tab').attr("style", "color: #0069d9");
+        $('#reg_tab').attr("style", "color: grey");
         $('#login_form').attr("style", "display:block");
         $('#reg_form').attr("style", "display:none");
     });
 
     $("#reg_tab").click(function () {
-        $('#login_tab').attr("class", "nav-link active");
-        $('#reg_tab').attr("class", "nav-link disabled");
+        $('#login_tab').attr("style", "color: grey");
+        $('#reg_tab').attr("style", "color: #17a2b8");
         $('#login_form').attr("style", "display:none");
         $('#reg_form').attr("style", "display:block");
     });
